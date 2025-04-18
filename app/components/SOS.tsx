@@ -72,9 +72,9 @@ export default function SOS() {
 
     try {
       const location = {
-        name: "Vivekananda College, Puttur",
-        latitude: 12.7606,
-        longitude: 75.2006,
+        name: "Mangalore Institure of Technology & Engineering, Moodabidri",
+        latitude: 13.0954,
+        longitude: 74.9965,
       }
 
       const googleMapsUrl = `https://www.google.com/maps?q=${location.latitude},${location.longitude}`
@@ -153,4 +153,3 @@ Map Link: ${googleMapsUrl}`,
     </>
   )
 }
-
