@@ -465,7 +465,7 @@ export default function ReportSlider({ isOpen, onClose, onSubmit }: ReportSlider
                             size="sm"
                             className="mt-3 w-full border-gray-700 text-gray-300 hover:bg-gray-800 hover:text-white"
                             onClick={() =>
-                              setReportData({ ...reportData, location: "Current Location (123 Example St, City)" })
+                              setReportData({ ...reportData, location: "Current Location (Mangalore Institute of Engineering and Technology, Moodabidri)" })
                             }
                           >
                             Use My Location
@@ -588,4 +588,3 @@ export default function ReportSlider({ isOpen, onClose, onSubmit }: ReportSlider
     </AnimatePresence>
   )
 }
-
