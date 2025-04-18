@@ -357,7 +357,7 @@ export default function AdminDashboard() {
                           {report.status || "pending"}
                         </Badge>
                       </div>
-                      <p className="mt-2 text-gray-300">{report.content || report.description}</p>
+                      <p className="mt-2 text-gray-300">{report.content}</p>
                       <div className="mt-4 flex gap-2">
                         <Button
                           size="sm"
@@ -698,4 +698,3 @@ export default function AdminDashboard() {
     </div>
   )
 }
-
