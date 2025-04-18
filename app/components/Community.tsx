@@ -9,6 +9,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { useToast } from "@/components/ui/use-toast"
 import { MessageCircle, AlertTriangle, Loader } from "lucide-react"
 import { useLanguage } from "../contexts/LanguageContext"
+import { useAuth } from "../contexts/AuthContext"
 
 interface Report {
   id: number
@@ -27,6 +28,7 @@ interface CommunityProps {
 
 export default function Community({ onIncidentSubmit }: CommunityProps) {
   const { t } = useLanguage()
+  const { user } = useAuth()
   const [story, setStory] = useState("")
   const [incident, setIncident] = useState("")
   const [reports, setReports] = useState<Report[]>([])
@@ -54,24 +56,23 @@ export default function Community({ onIncidentSubmit }: CommunityProps) {
     setIsLoading(true)
 
     setTimeout(() => {
-      // Get current user from localStorage if available
-      const userString = localStorage.getItem("currentUser")
-      const user = userString ? JSON.parse(userString) : null
+      // Use Firebase auth user data if available
+      const userInfo = user
+        ? {
+            name: user.displayName || user.email?.split("@")[0] || "User",
+            email: user.email || "no-email@example.com",
+          }
+        : {
+            name: "Anonymous User",
+            email: "anonymous@example.com",
+          }
 
       const newReport: Report = {
         id: Date.now(),
         type,
         content,
         created_at: new Date().toISOString(),
-        user: user
-          ? {
-              name: user.displayName || "Anonymous User",
-              email: user.email || "anonymous@example.com",
-            }
-          : {
-              name: "Anonymous User",
-              email: "anonymous@example.com",
-            },
+        user: userInfo,
       }
 
       const updatedReports = [newReport, ...reports].slice(0, 10)
@@ -190,4 +191,3 @@ export default function Community({ onIncidentSubmit }: CommunityProps) {
     </Card>
   )
 }
-
