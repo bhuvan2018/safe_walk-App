@@ -272,7 +272,6 @@ export default function Dashboard() {
               </div>
             </motion.div>
           </div>
-
           <div id="safety-challenges" className="mt-8 md:mt-12">
             <SafetyChallenges onIncidentReportClick={() => {}} hasSubmittedIncident={hasSubmittedIncident} />
           </div>
