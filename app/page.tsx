@@ -12,7 +12,7 @@ import Image from "next/image"
 import { useRouter } from "next/navigation"
 import LoadingAnimation from "@/app/components/LoadingAnimation"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Eye, EyeOff, Lock, Mail, User, AlertCircle, ArrowRight, HelpCircle } from "lucide-react"
+import { Eye, EyeOff, Lock, Mail, User, AlertCircle, ArrowRight, HelpCircle, Shield } from "lucide-react"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
 
 export default function AuthPage() {
@@ -114,9 +114,18 @@ export default function AuthPage() {
       }
     } catch (error) {
       console.error("Login error:", error)
+
+      // Handle specific Firebase auth unavailable error
+      const errorMessage =
+        error instanceof Error && error.name === "FirebaseAuthUnavailableError"
+          ? "Authentication service is currently unavailable. Please try again later."
+          : error instanceof Error
+            ? error.message
+            : "An unexpected error occurred"
+
       toast({
         title: "Login Failed",
-        description: error instanceof Error ? error.message : "An unexpected error occurred",
+        description: errorMessage,
         variant: "destructive",
       })
     } finally {
@@ -141,9 +150,18 @@ export default function AuthPage() {
       }
     } catch (error) {
       console.error("Signup error:", error)
+
+      // Handle specific Firebase auth unavailable error
+      const errorMessage =
+        error instanceof Error && error.name === "FirebaseAuthUnavailableError"
+          ? "Authentication service is currently unavailable. Please try again later."
+          : error instanceof Error
+            ? error.message
+            : "An unexpected error occurred"
+
       toast({
         title: "Signup Failed",
-        description: error instanceof Error ? error.message : "An unexpected error occurred",
+        description: errorMessage,
         variant: "destructive",
       })
     } finally {
@@ -164,9 +182,18 @@ export default function AuthPage() {
       }
     } catch (error) {
       console.error("Google login error:", error)
+
+      // Handle specific Firebase auth unavailable error
+      const errorMessage =
+        error instanceof Error && error.name === "FirebaseAuthUnavailableError"
+          ? "Authentication service is currently unavailable. Please try again later."
+          : error instanceof Error
+            ? error.message
+            : "An unexpected error occurred during Google login."
+
       toast({
         title: "Login Failed",
-        description: error instanceof Error ? error.message : "An unexpected error occurred during Google login.",
+        description: errorMessage,
         variant: "destructive",
       })
     } finally {
@@ -204,43 +231,50 @@ export default function AuthPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-950 via-gray-900 to-gray-950 flex flex-col items-center justify-center p-4 relative overflow-hidden">
-      {/* Animated background elements */}
-      <div className="absolute inset-0 overflow-hidden">
+    <div className="min-h-screen flex flex-col items-center justify-center relative overflow-hidden">
+      {/* Animated background */}
+      <div className="absolute inset-0 -z-10 overflow-hidden">
+        {/* Main gradient background */}
+        <div className="absolute inset-0 bg-gradient-to-br from-purple-950 via-gray-900 to-pink-950"></div>
+
+        {/* Animated orbs */}
         <motion.div
-          className="absolute w-[500px] h-[500px] rounded-full bg-orange-500/5 blur-3xl"
+          className="absolute w-[600px] h-[600px] rounded-full bg-gradient-to-r from-pink-500/20 to-purple-500/20 blur-3xl"
           animate={{
-            x: mousePosition.x * 0.05,
-            y: mousePosition.y * 0.05,
+            x: [mousePosition.x * 0.02, mousePosition.x * 0.03],
+            y: [mousePosition.y * 0.02, mousePosition.y * 0.03],
           }}
           transition={{ type: "spring", damping: 50 }}
         />
         <motion.div
-          className="absolute w-[300px] h-[300px] rounded-full bg-orange-600/5 blur-3xl right-1/4 top-1/4"
+          className="absolute w-[500px] h-[500px] rounded-full bg-gradient-to-r from-teal-500/10 to-blue-500/10 blur-3xl right-1/4 top-1/4"
           animate={{
-            x: mousePosition.x * -0.03,
-            y: mousePosition.y * -0.03,
+            x: mousePosition.x * -0.02,
+            y: mousePosition.y * -0.02,
           }}
           transition={{ type: "spring", damping: 50 }}
         />
+
+        {/* Subtle pattern overlay */}
+        <div className="absolute inset-0 bg-[url('/subtle-pattern.png')] opacity-5"></div>
       </div>
 
-      {/* Main content */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5 }}
-        className="w-full max-w-md z-10"
-      >
-        <div className="text-center mb-8">
+      <div className="container mx-auto px-4 py-8 flex flex-col items-center justify-center z-10 max-w-md">
+        {/* Logo and Title */}
+        <motion.div
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8 }}
+          className="text-center mb-8"
+        >
           <motion.div
             initial={{ scale: 0 }}
             animate={{ scale: 1 }}
             transition={{ type: "spring", stiffness: 200, damping: 15 }}
             className="relative w-24 h-24 mx-auto mb-4 group"
           >
-            <div className="absolute inset-0 rounded-full bg-gradient-to-r from-orange-500 to-red-500 blur-lg opacity-70 group-hover:opacity-100 transition-opacity duration-300"></div>
-            <div className="relative w-full h-full rounded-full overflow-hidden border-2 border-orange-500/50">
+            <div className="absolute inset-0 rounded-full bg-gradient-to-r from-pink-500 to-purple-500 blur-lg opacity-70 group-hover:opacity-100 transition-opacity duration-300"></div>
+            <div className="relative w-full h-full rounded-full overflow-hidden border-2 border-pink-500/50">
               <Image
                 src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/Consent%20isn't%20tricky-mALm1EyLyR0x4DyhcPVIQIW7qDGWrX.jpeg"
                 alt="SafeWalk Logo"
@@ -254,380 +288,408 @@ export default function AuthPage() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.2 }}
-            className="text-3xl font-bold text-white mb-2 tracking-tight"
+            className="text-4xl font-bold tracking-tight mb-2"
           >
-            Welcome to{" "}
-            <span className="bg-gradient-to-r from-orange-500 to-red-500 text-transparent bg-clip-text">SafeWalk</span>
+            <span className="bg-gradient-to-r from-pink-400 to-purple-500 text-transparent bg-clip-text">Safe</span>
+            <span className="bg-gradient-to-r from-purple-500 to-teal-400 text-transparent bg-clip-text">Walk</span>
           </motion.h1>
           <motion.p
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.3 }}
-            className="text-gray-400"
+            className="text-gray-300 text-lg"
           >
-            Empowering Women's Safety
+            Your companion for safer journeys
           </motion.p>
-        </div>
+        </motion.div>
 
+        {/* Auth Form */}
         <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.4 }}
-          className="bg-gray-900/80 backdrop-blur-md rounded-xl p-8 shadow-2xl border border-gray-800"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, delay: 0.4 }}
+          className="w-full"
         >
-          <div className="flex justify-between items-center mb-6">
-            <h2 className="text-xl font-semibold text-white">
-              {isAdminMode ? (
-                <span className="flex items-center gap-2">
-                  <Lock className="h-5 w-5 text-orange-500" />
-                  Admin Login
-                </span>
-              ) : (
-                <span className="flex items-center gap-2">
-                  <User className="h-5 w-5 text-orange-500" />
-                  User Authentication
-                </span>
-              )}
-            </h2>
-            <Button
-              variant="ghost"
-              onClick={handleAdminToggle}
-              className="text-orange-500 hover:text-orange-400 hover:bg-orange-500/10 transition-all duration-300"
-            >
-              {isAdminMode ? "Switch to User" : "Admin Login"}
-            </Button>
-          </div>
-
-          <Tabs defaultValue="login" className="w-full">
-            <TabsList className="grid w-full grid-cols-2 mb-6 bg-gray-800/50 p-1 rounded-lg">
-              <TabsTrigger
-                value="login"
-                className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-orange-500 data-[state=active]:to-red-500 data-[state=active]:text-white"
+          <div className="bg-white/10 backdrop-blur-md rounded-2xl p-8 border border-white/20 shadow-xl">
+            <div className="flex justify-between items-center mb-6">
+              <h2 className="text-xl font-semibold text-white">
+                {isAdminMode ? (
+                  <span className="flex items-center gap-2">
+                    <Shield className="h-5 w-5 text-purple-400" />
+                    Admin Access
+                  </span>
+                ) : (
+                  <span className="flex items-center gap-2">
+                    <User className="h-5 w-5 text-pink-400" />
+                    Welcome Back
+                  </span>
+                )}
+              </h2>
+              <Button
+                variant="ghost"
+                onClick={handleAdminToggle}
+                className={`text-sm ${isAdminMode ? "text-pink-400 hover:text-pink-300" : "text-purple-400 hover:text-purple-300"} hover:bg-white/10 transition-all duration-300`}
               >
-                Login
-              </TabsTrigger>
-              <TabsTrigger
-                value="signup"
-                disabled={isAdminMode}
-                className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-orange-500 data-[state=active]:to-red-500 data-[state=active]:text-white"
-              >
-                Signup
-              </TabsTrigger>
-            </TabsList>
+                {isAdminMode ? "Switch to User" : "Admin Login"}
+              </Button>
+            </div>
 
-            <TabsContent value="login">
-              <form onSubmit={handleLogin} className="space-y-4">
-                <div>
-                  <label
-                    htmlFor="login-email"
-                    className="block text-sm font-medium text-gray-300 mb-1 flex items-center"
-                  >
-                    <Mail className="h-4 w-4 mr-2 text-orange-500" />
-                    Email
-                  </label>
-                  <div className="relative">
-                    <Input
-                      id="login-email"
-                      type="email"
-                      placeholder="Enter your email"
-                      value={loginEmail}
-                      onChange={(e) => {
-                        setLoginEmail(e.target.value)
-                        if (formErrors.loginEmail) {
-                          setFormErrors({ ...formErrors, loginEmail: undefined })
-                        }
-                      }}
-                      className={`w-full p-2 bg-gray-800/50 border ${formErrors.loginEmail ? "border-red-500" : "border-gray-700"} rounded-lg text-white focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all duration-200`}
-                      required
-                    />
-                    {formErrors.loginEmail && (
-                      <div className="absolute right-3 top-1/2 -translate-y-1/2 text-red-500">
-                        <TooltipProvider>
-                          <Tooltip>
-                            <TooltipTrigger asChild>
-                              <AlertCircle className="h-5 w-5" />
-                            </TooltipTrigger>
-                            <TooltipContent>
-                              <p>{formErrors.loginEmail}</p>
-                            </TooltipContent>
-                          </Tooltip>
-                        </TooltipProvider>
-                      </div>
-                    )}
-                  </div>
-                  {formErrors.loginEmail && <p className="text-red-500 text-xs mt-1">{formErrors.loginEmail}</p>}
-                </div>
-                <div>
-                  <label
-                    htmlFor="login-password"
-                    className="block text-sm font-medium text-gray-300 mb-1 flex items-center"
-                  >
-                    <Lock className="h-4 w-4 mr-2 text-orange-500" />
-                    Password
-                  </label>
-                  <div className="relative">
-                    <Input
-                      id="login-password"
-                      type={showLoginPassword ? "text" : "password"}
-                      placeholder="Enter your password"
-                      value={loginPassword}
-                      onChange={(e) => {
-                        setLoginPassword(e.target.value)
-                        if (formErrors.loginPassword) {
-                          setFormErrors({ ...formErrors, loginPassword: undefined })
-                        }
-                      }}
-                      className={`w-full p-2 bg-gray-800/50 border ${formErrors.loginPassword ? "border-red-500" : "border-gray-700"} rounded-lg text-white focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all duration-200`}
-                      required
-                    />
-                    <button
-                      type="button"
-                      onClick={() => setShowLoginPassword(!showLoginPassword)}
-                      className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white transition-colors"
-                    >
-                      {showLoginPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
-                    </button>
-                    {formErrors.loginPassword && (
-                      <div className="absolute right-10 top-1/2 -translate-y-1/2 text-red-500">
-                        <TooltipProvider>
-                          <Tooltip>
-                            <TooltipTrigger asChild>
-                              <AlertCircle className="h-5 w-5" />
-                            </TooltipTrigger>
-                            <TooltipContent>
-                              <p>{formErrors.loginPassword}</p>
-                            </TooltipContent>
-                          </Tooltip>
-                        </TooltipProvider>
-                      </div>
-                    )}
-                  </div>
-                  {formErrors.loginPassword && <p className="text-red-500 text-xs mt-1">{formErrors.loginPassword}</p>}
-                </div>
-
-                <Button
-                  type="submit"
-                  className="w-full bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white font-bold py-3 px-4 rounded-lg transition duration-300 ease-in-out transform hover:scale-[1.02] hover:shadow-lg flex items-center justify-center gap-2 group"
+            <Tabs defaultValue="login" className="w-full">
+              <TabsList className="grid w-full grid-cols-2 mb-6 bg-white/5 p-1 rounded-lg">
+                <TabsTrigger
+                  value="login"
+                  className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-pink-500 data-[state=active]:to-purple-500 data-[state=active]:text-white"
                 >
-                  {isAdminMode ? "Login as Admin" : "Login"}
-                  <ArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
-                </Button>
-              </form>
+                  Login
+                </TabsTrigger>
+                <TabsTrigger
+                  value="signup"
+                  disabled={isAdminMode}
+                  className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-purple-500 data-[state=active]:to-teal-400 data-[state=active]:text-white"
+                >
+                  Sign Up
+                </TabsTrigger>
+              </TabsList>
 
-              {!isAdminMode && (
+              <TabsContent value="login">
+                <form onSubmit={handleLogin} className="space-y-4">
+                  <div>
+                    <label
+                      htmlFor="login-email"
+                      className="block text-sm font-medium text-gray-200 mb-1 flex items-center"
+                    >
+                      <Mail className="h-4 w-4 mr-2 text-pink-400" />
+                      Email
+                    </label>
+                    <div className="relative">
+                      <Input
+                        id="login-email"
+                        type="email"
+                        placeholder="Enter your email"
+                        value={loginEmail}
+                        onChange={(e) => {
+                          setLoginEmail(e.target.value)
+                          if (formErrors.loginEmail) {
+                            setFormErrors({ ...formErrors, loginEmail: undefined })
+                          }
+                        }}
+                        className={`w-full p-2 bg-white/5 border ${formErrors.loginEmail ? "border-red-400" : "border-white/20"} rounded-lg text-white focus:ring-2 focus:ring-pink-500 focus:border-transparent transition-all duration-200`}
+                        required
+                      />
+                      {formErrors.loginEmail && (
+                        <div className="absolute right-3 top-1/2 -translate-y-1/2 text-red-400">
+                          <TooltipProvider>
+                            <Tooltip>
+                              <TooltipTrigger asChild>
+                                <AlertCircle className="h-5 w-5" />
+                              </TooltipTrigger>
+                              <TooltipContent>
+                                <p>{formErrors.loginEmail}</p>
+                              </TooltipContent>
+                            </Tooltip>
+                          </TooltipProvider>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                  <div>
+                    <label
+                      htmlFor="login-password"
+                      className="block text-sm font-medium text-gray-200 mb-1 flex items-center"
+                    >
+                      <Lock className="h-4 w-4 mr-2 text-pink-400" />
+                      Password
+                    </label>
+                    <div className="relative">
+                      <Input
+                        id="login-password"
+                        type={showLoginPassword ? "text" : "password"}
+                        placeholder="Enter your password"
+                        value={loginPassword}
+                        onChange={(e) => {
+                          setLoginPassword(e.target.value)
+                          if (formErrors.loginPassword) {
+                            setFormErrors({ ...formErrors, loginPassword: undefined })
+                          }
+                        }}
+                        className={`w-full p-2 bg-white/5 border ${formErrors.loginPassword ? "border-red-400" : "border-white/20"} rounded-lg text-white focus:ring-2 focus:ring-pink-500 focus:border-transparent transition-all duration-200`}
+                        required
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setShowLoginPassword(!showLoginPassword)}
+                        className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white transition-colors"
+                      >
+                        {showLoginPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
+                      </button>
+                      {formErrors.loginPassword && (
+                        <div className="absolute right-10 top-1/2 -translate-y-1/2 text-red-400">
+                          <TooltipProvider>
+                            <Tooltip>
+                              <TooltipTrigger asChild>
+                                <AlertCircle className="h-5 w-5" />
+                              </TooltipTrigger>
+                              <TooltipContent>
+                                <p>{formErrors.loginPassword}</p>
+                              </TooltipContent>
+                            </Tooltip>
+                          </TooltipProvider>
+                        </div>
+                      )}
+                    </div>
+                    <div className="flex justify-end mt-1">
+                      <button
+                        type="button"
+                        onClick={() => {
+                          // Handle forgot password
+                          toast({
+                            title: "Password Reset",
+                            description: "Check your email for password reset instructions.",
+                          })
+                        }}
+                        className="text-xs text-pink-400 hover:text-pink-300"
+                      >
+                        Forgot password?
+                      </button>
+                    </div>
+                  </div>
+
+                  <Button
+                    type="submit"
+                    className={`w-full py-3 px-4 rounded-lg transition duration-300 ease-in-out transform hover:scale-[1.02] hover:shadow-lg flex items-center justify-center gap-2 group ${
+                      isAdminMode
+                        ? "bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white font-bold"
+                        : "bg-gradient-to-r from-pink-500 to-purple-600 hover:from-pink-600 hover:to-purple-700 text-white font-bold"
+                    }`}
+                  >
+                    {isAdminMode ? "Access Admin Panel" : "Sign In"}
+                    <ArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
+                  </Button>
+                </form>
+
+                {!isAdminMode && (
+                  <div className="mt-6">
+                    <div className="relative flex items-center justify-center">
+                      <div className="absolute inset-0 flex items-center">
+                        <div className="w-full border-t border-white/10"></div>
+                      </div>
+                      <div className="relative px-4 text-sm text-gray-300 bg-transparent">Or continue with</div>
+                    </div>
+                    <div className="mt-4">
+                      <Button
+                        onClick={handleGoogleLogin}
+                        className="w-full bg-white hover:bg-gray-100 text-gray-900 font-medium py-3 px-4 rounded-lg transition duration-300 ease-in-out transform hover:scale-[1.02] hover:shadow-lg flex items-center justify-center"
+                      >
+                        <div className="w-5 h-5 mr-2 relative">
+                          <Image
+                            src="/google-logo.svg"
+                            alt="Google Logo"
+                            width={20}
+                            height={20}
+                            className="absolute inset-0"
+                          />
+                        </div>
+                        <span>Continue with Google</span>
+                      </Button>
+                    </div>
+                  </div>
+                )}
+              </TabsContent>
+
+              <TabsContent value="signup">
+                <form onSubmit={handleSignup} className="space-y-4">
+                  <div>
+                    <label
+                      htmlFor="signup-email"
+                      className="block text-sm font-medium text-gray-200 mb-1 flex items-center"
+                    >
+                      <Mail className="h-4 w-4 mr-2 text-teal-400" />
+                      Email
+                    </label>
+                    <div className="relative">
+                      <Input
+                        id="signup-email"
+                        type="email"
+                        placeholder="Enter your email"
+                        value={signupEmail}
+                        onChange={(e) => {
+                          setSignupEmail(e.target.value)
+                          if (formErrors.signupEmail) {
+                            setFormErrors({ ...formErrors, signupEmail: undefined })
+                          }
+                        }}
+                        className={`w-full p-2 bg-white/5 border ${formErrors.signupEmail ? "border-red-400" : "border-white/20"} rounded-lg text-white focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all duration-200`}
+                        required
+                      />
+                      {formErrors.signupEmail && (
+                        <div className="absolute right-3 top-1/2 -translate-y-1/2 text-red-400">
+                          <TooltipProvider>
+                            <Tooltip>
+                              <TooltipTrigger asChild>
+                                <AlertCircle className="h-5 w-5" />
+                              </TooltipTrigger>
+                              <TooltipContent>
+                                <p>{formErrors.signupEmail}</p>
+                              </TooltipContent>
+                            </Tooltip>
+                          </TooltipProvider>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                  <div>
+                    <label
+                      htmlFor="signup-password"
+                      className="block text-sm font-medium text-gray-200 mb-1 flex items-center"
+                    >
+                      <Lock className="h-4 w-4 mr-2 text-teal-400" />
+                      Password
+                      <TooltipProvider>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <HelpCircle className="h-4 w-4 ml-1 text-gray-400" />
+                          </TooltipTrigger>
+                          <TooltipContent>
+                            <p>Password must be at least 6 characters</p>
+                          </TooltipContent>
+                        </Tooltip>
+                      </TooltipProvider>
+                    </label>
+                    <div className="relative">
+                      <Input
+                        id="signup-password"
+                        type={showSignupPassword ? "text" : "password"}
+                        placeholder="Create a password"
+                        value={signupPassword}
+                        onChange={(e) => {
+                          setSignupPassword(e.target.value)
+                          if (formErrors.signupPassword) {
+                            setFormErrors({ ...formErrors, signupPassword: undefined })
+                          }
+                        }}
+                        className={`w-full p-2 bg-white/5 border ${formErrors.signupPassword ? "border-red-400" : "border-white/20"} rounded-lg text-white focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all duration-200`}
+                        required
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setShowSignupPassword(!showSignupPassword)}
+                        className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white transition-colors"
+                      >
+                        {showSignupPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
+                      </button>
+                      {formErrors.signupPassword && (
+                        <div className="absolute right-10 top-1/2 -translate-y-1/2 text-red-400">
+                          <TooltipProvider>
+                            <Tooltip>
+                              <TooltipTrigger asChild>
+                                <AlertCircle className="h-5 w-5" />
+                              </TooltipTrigger>
+                              <TooltipContent>
+                                <p>{formErrors.signupPassword}</p>
+                              </TooltipContent>
+                            </Tooltip>
+                          </TooltipProvider>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                  <div>
+                    <label
+                      htmlFor="confirm-password"
+                      className="block text-sm font-medium text-gray-200 mb-1 flex items-center"
+                    >
+                      <Lock className="h-4 w-4 mr-2 text-teal-400" />
+                      Confirm Password
+                    </label>
+                    <div className="relative">
+                      <Input
+                        id="confirm-password"
+                        type={showConfirmPassword ? "text" : "password"}
+                        placeholder="Confirm your password"
+                        value={confirmPassword}
+                        onChange={(e) => {
+                          setConfirmPassword(e.target.value)
+                          if (formErrors.confirmPassword) {
+                            setFormErrors({ ...formErrors, confirmPassword: undefined })
+                          }
+                        }}
+                        className={`w-full p-2 bg-white/5 border ${formErrors.confirmPassword ? "border-red-400" : "border-white/20"} rounded-lg text-white focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all duration-200`}
+                        required
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                        className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white transition-colors"
+                      >
+                        {showConfirmPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
+                      </button>
+                      {formErrors.confirmPassword && (
+                        <div className="absolute right-10 top-1/2 -translate-y-1/2 text-red-400">
+                          <TooltipProvider>
+                            <Tooltip>
+                              <TooltipTrigger asChild>
+                                <AlertCircle className="h-5 w-5" />
+                              </TooltipTrigger>
+                              <TooltipContent>
+                                <p>{formErrors.confirmPassword}</p>
+                              </TooltipContent>
+                            </Tooltip>
+                          </TooltipProvider>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                  <Button
+                    type="submit"
+                    className="w-full bg-gradient-to-r from-purple-500 to-teal-500 hover:from-purple-600 hover:to-teal-600 text-white font-bold py-3 px-4 rounded-lg transition duration-300 ease-in-out transform hover:scale-[1.02] hover:shadow-lg flex items-center justify-center gap-2 group"
+                  >
+                    Create Account
+                    <ArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
+                  </Button>
+                </form>
                 <div className="mt-6">
                   <div className="relative flex items-center justify-center">
                     <div className="absolute inset-0 flex items-center">
-                      <div className="w-full border-t border-gray-700"></div>
+                      <div className="w-full border-t border-white/10"></div>
                     </div>
-                    <div className="relative px-4 text-sm text-gray-400 bg-gray-900/80">Or continue with</div>
+                    <div className="relative px-4 text-sm text-gray-300 bg-transparent">Or continue with</div>
                   </div>
                   <div className="mt-4">
                     <Button
                       onClick={handleGoogleLogin}
                       className="w-full bg-white hover:bg-gray-100 text-gray-900 font-medium py-3 px-4 rounded-lg transition duration-300 ease-in-out transform hover:scale-[1.02] hover:shadow-lg flex items-center justify-center"
                     >
-                      <Image src="/google-logo.svg" alt="Google Logo" width={20} height={20} />
-                      <span className="ml-2">Continue with Google</span>
+                      <div className="w-5 h-5 mr-2 relative">
+                        <Image
+                          src="/google-logo.svg"
+                          alt="Google Logo"
+                          width={20}
+                          height={20}
+                          className="absolute inset-0"
+                        />
+                      </div>
+                      <span>Continue with Google</span>
                     </Button>
                   </div>
                 </div>
-              )}
-            </TabsContent>
-
-            <TabsContent value="signup">
-              <form onSubmit={handleSignup} className="space-y-4">
-                <div>
-                  <label
-                    htmlFor="signup-email"
-                    className="block text-sm font-medium text-gray-300 mb-1 flex items-center"
-                  >
-                    <Mail className="h-4 w-4 mr-2 text-orange-500" />
-                    Email
-                  </label>
-                  <div className="relative">
-                    <Input
-                      id="signup-email"
-                      type="email"
-                      placeholder="Enter your email"
-                      value={signupEmail}
-                      onChange={(e) => {
-                        setSignupEmail(e.target.value)
-                        if (formErrors.signupEmail) {
-                          setFormErrors({ ...formErrors, signupEmail: undefined })
-                        }
-                      }}
-                      className={`w-full p-2 bg-gray-800/50 border ${formErrors.signupEmail ? "border-red-500" : "border-gray-700"} rounded-lg text-white focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all duration-200`}
-                      required
-                    />
-                    {formErrors.signupEmail && (
-                      <div className="absolute right-3 top-1/2 -translate-y-1/2 text-red-500">
-                        <TooltipProvider>
-                          <Tooltip>
-                            <TooltipTrigger asChild>
-                              <AlertCircle className="h-5 w-5" />
-                            </TooltipTrigger>
-                            <TooltipContent>
-                              <p>{formErrors.signupEmail}</p>
-                            </TooltipContent>
-                          </Tooltip>
-                        </TooltipProvider>
-                      </div>
-                    )}
-                  </div>
-                  {formErrors.signupEmail && <p className="text-red-500 text-xs mt-1">{formErrors.signupEmail}</p>}
-                </div>
-                <div>
-                  <label
-                    htmlFor="signup-password"
-                    className="block text-sm font-medium text-gray-300 mb-1 flex items-center"
-                  >
-                    <Lock className="h-4 w-4 mr-2 text-orange-500" />
-                    Password
-                    <TooltipProvider>
-                      <Tooltip>
-                        <TooltipTrigger asChild>
-                          <HelpCircle className="h-4 w-4 ml-1 text-gray-500" />
-                        </TooltipTrigger>
-                        <TooltipContent>
-                          <p>Password must be at least 6 characters</p>
-                        </TooltipContent>
-                      </Tooltip>
-                    </TooltipProvider>
-                  </label>
-                  <div className="relative">
-                    <Input
-                      id="signup-password"
-                      type={showSignupPassword ? "text" : "password"}
-                      placeholder="Create a password"
-                      value={signupPassword}
-                      onChange={(e) => {
-                        setSignupPassword(e.target.value)
-                        if (formErrors.signupPassword) {
-                          setFormErrors({ ...formErrors, signupPassword: undefined })
-                        }
-                      }}
-                      className={`w-full p-2 bg-gray-800/50 border ${formErrors.signupPassword ? "border-red-500" : "border-gray-700"} rounded-lg text-white focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all duration-200`}
-                      required
-                    />
-                    <button
-                      type="button"
-                      onClick={() => setShowSignupPassword(!showSignupPassword)}
-                      className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white transition-colors"
-                    >
-                      {showSignupPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
-                    </button>
-                    {formErrors.signupPassword && (
-                      <div className="absolute right-10 top-1/2 -translate-y-1/2 text-red-500">
-                        <TooltipProvider>
-                          <Tooltip>
-                            <TooltipTrigger asChild>
-                              <AlertCircle className="h-5 w-5" />
-                            </TooltipTrigger>
-                            <TooltipContent>
-                              <p>{formErrors.signupPassword}</p>
-                            </TooltipContent>
-                          </Tooltip>
-                        </TooltipProvider>
-                      </div>
-                    )}
-                  </div>
-                  {formErrors.signupPassword && (
-                    <p className="text-red-500 text-xs mt-1">{formErrors.signupPassword}</p>
-                  )}
-                </div>
-                <div>
-                  <label
-                    htmlFor="confirm-password"
-                    className="block text-sm font-medium text-gray-300 mb-1 flex items-center"
-                  >
-                    <Lock className="h-4 w-4 mr-2 text-orange-500" />
-                    Confirm Password
-                  </label>
-                  <div className="relative">
-                    <Input
-                      id="confirm-password"
-                      type={showConfirmPassword ? "text" : "password"}
-                      placeholder="Confirm your password"
-                      value={confirmPassword}
-                      onChange={(e) => {
-                        setConfirmPassword(e.target.value)
-                        if (formErrors.confirmPassword) {
-                          setFormErrors({ ...formErrors, confirmPassword: undefined })
-                        }
-                      }}
-                      className={`w-full p-2 bg-gray-800/50 border ${formErrors.confirmPassword ? "border-red-500" : "border-gray-700"} rounded-lg text-white focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all duration-200`}
-                      required
-                    />
-                    <button
-                      type="button"
-                      onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                      className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white transition-colors"
-                    >
-                      {showConfirmPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
-                    </button>
-                    {formErrors.confirmPassword && (
-                      <div className="absolute right-10 top-1/2 -translate-y-1/2 text-red-500">
-                        <TooltipProvider>
-                          <Tooltip>
-                            <TooltipTrigger asChild>
-                              <AlertCircle className="h-5 w-5" />
-                            </TooltipTrigger>
-                            <TooltipContent>
-                              <p>{formErrors.confirmPassword}</p>
-                            </TooltipContent>
-                          </Tooltip>
-                        </TooltipProvider>
-                      </div>
-                    )}
-                  </div>
-                  {formErrors.confirmPassword && (
-                    <p className="text-red-500 text-xs mt-1">{formErrors.confirmPassword}</p>
-                  )}
-                </div>
-                <Button
-                  type="submit"
-                  className="w-full bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white font-bold py-3 px-4 rounded-lg transition duration-300 ease-in-out transform hover:scale-[1.02] hover:shadow-lg flex items-center justify-center gap-2 group"
-                >
-                  Create Account
-                  <ArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
-                </Button>
-              </form>
-              <div className="mt-6">
-                <div className="relative flex items-center justify-center">
-                  <div className="absolute inset-0 flex items-center">
-                    <div className="w-full border-t border-gray-700"></div>
-                  </div>
-                  <div className="relative px-4 text-sm text-gray-400 bg-gray-900/80">Or continue with</div>
-                </div>
-                <div className="mt-4">
-                  <Button
-                    onClick={handleGoogleLogin}
-                    className="w-full bg-white hover:bg-gray-100 text-gray-900 font-medium py-3 px-4 rounded-lg transition duration-300 ease-in-out transform hover:scale-[1.02] hover:shadow-lg flex items-center justify-center"
-                  >
-                    <Image src="/google-logo.svg" alt="Google Logo" width={20} height={20} />
-                    <span className="ml-2">Continue with Google</span>
-                  </Button>
-                </div>
-              </div>
-            </TabsContent>
-          </Tabs>
-        </motion.div>
-
-        {/* Security badge */}
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.6 }}
-          className="mt-6 text-center"
-        >
-          <div className="inline-flex items-center gap-2 text-gray-500 text-sm bg-gray-900/50 px-3 py-1.5 rounded-full border border-gray-800">
-            <Lock className="h-3.5 w-3.5 text-orange-500" />
-            <span>Secure Authentication</span>
+              </TabsContent>
+            </Tabs>
           </div>
+
+          {/* Security badge */}
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.6 }}
+            className="mt-6 text-center"
+          >
+            <div className="inline-flex items-center gap-2 text-gray-300 text-sm bg-white/5 backdrop-blur-sm px-3 py-1.5 rounded-full border border-white/10">
+              <Lock className="h-3.5 w-3.5 text-teal-400" />
+              <span>Secure Authentication</span>
+            </div>
+          </motion.div>
         </motion.div>
-      </motion.div>
+      </div>
     </div>
   )
 }
-
